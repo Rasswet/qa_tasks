@@ -27,9 +27,12 @@ def do_job():
 
     elem.send_keys("testing")
     elem.send_keys(Keys.RETURN)
-    browser.implicitly_wait(10)  # seconds
-
-    # time.sleep(3)
+    
+	page_loaded = False
+    while not page_loaded:
+        page_loaded = browser.execute_script("return document.readyState == 'complete';")
+        time.sleep(0.3)
+    
     filename="file.png"
     browser.save_screenshot(filename)
 
