@@ -1,12 +1,17 @@
+""" Test task № 1
+    Simple tests for api
+"""
+
 import requests
 import pytest
 
 
-def check_zip(zip):
-    numbers = zip[:5]
+def check_zip(zip_code):
+    """ Check if zip code is valid """
+    numbers = zip_code[:5]
     print(numbers)
 
-    if  [s for s in numbers if s not in '0123456789']:
+    if [s for s in numbers if s not in '0123456789']:
         return False
 
     return True
@@ -47,12 +52,11 @@ def test_region():
 def test_check_zip():
     result = requests.get('http://ip-api.com/json')
     data = result.json()
-    zip = data.get('zip')
+    zip_code = data.get('zip')
 
-
-    assert zip > ''
-    assert len(zip) >= 6
-    assert check_zip(zip)
+    assert zip_code > ''
+    assert len(zip_code) >= 6
+    assert check_zip(zip_code)
 
 
 if __name__ == "__main__":
