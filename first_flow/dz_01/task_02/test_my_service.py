@@ -42,6 +42,7 @@ def test_check_login():
     assert result.status_code == 200
     assert data['auth_cookie'] > ''
 
+
 def test_check_wrong_login():
     """ This test checks that fake login does not works fine. """
 
@@ -52,20 +53,17 @@ def test_check_wrong_login():
     result = requests.get(url,
                           auth=HTTPBasicAuth(user_fake, PASSWORD))
 
-
     # Verify that server returns 401:
     assert result.status_code == 401
     assert result.reason == 'UNAUTHORIZED'
 
 
-def test_check_list_of_books_fake_cookie(auth_cookie):
+def test_check_list_of_books_fake_cookie():
     """ This test checks /books REST API function with fake cookie """
 
     url = '{0}/books'.format(HOST)
     fake_cookie = '485039457843563486uuuu5209456345764375634994587485785'
     result = requests.get(url, cookies={'my_cookie': fake_cookie})
-
-    'INTERNAL SERVER ERROR'
 
     assert result.status_code == 500
     assert result.reason == 'INTERNAL SERVER ERROR'
@@ -134,7 +132,6 @@ def test_get_book(auth_cookie):
     # Get id of created book:
     new_book['id'] = data['id']
 
-
     # Get list of books:
     result = requests.get('{0}/books'.format(HOST),
                           cookies={'my_cookie': auth_cookie})
@@ -175,7 +172,9 @@ def test_delete_book_does_not_exist(auth_cookie):
 
 
 def test_update_book(auth_cookie):
-    """ Create new book, change title  and check that title of book was successfully changed.
+    """ Create new book, change title and check
+        that title of book was successfully changed.
+
 
         Steps:
         1) Create new book
@@ -196,14 +195,14 @@ def test_update_book(auth_cookie):
     # Get id of created book:
     new_book['id'] = data['id']
 
-  # Change name of book (Note: DELETE REST API request with cookie!):
+    # Change name of book (Note: DELETE REST API request with cookie!):
     new_title = 'Book for QA'
     new_book_info = {'title': new_title, 'author': 'Decker'}
     url = '{0}/books/{1}'.format(HOST, new_book['id'])
-    result = requests.put(url,data=new_book_info,
-                             cookies={'my_cookie': auth_cookie})
+    result = requests.put(url, data=new_book_info,
+                          cookies={'my_cookie': auth_cookie})
     data_new = result.json()
-    new_book_title= data_new['title']
+    new_book_title = data_new['title']
 
     assert new_title == new_book_title
 
