@@ -1,10 +1,10 @@
 """ Test task
-    Simple tests for api
+    Simple flask api
 """
 
 from uuid import uuid4
 import flask
-from flask import Flask
+from flask import Flask, abort
 from flask import request
 from flask_basicauth import BasicAuth
 
@@ -97,6 +97,8 @@ def update_book(book_id):
                 BOOKS[i] = book
 
                 return flask.jsonify(book)
+        else:
+            abort(404)
 
     raise InvalidUsage('No valid auth cookie provided!')
 
