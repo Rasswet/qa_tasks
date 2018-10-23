@@ -1,13 +1,20 @@
+""" Test task
+    It is used for simplify tests.
+
+"""
+
+from uuid import UUID
+from configparser import ConfigParser
 import requests
 from requests.auth import HTTPBasicAuth
-from configparser import ConfigParser
-from uuid import UUID
+
 
 config = ConfigParser()
 config.read('test_config.conf')
 
 
 def get_conf_param(section, parameter, default_value):
+    """ This function return a parameter from config file """
     result = config.get(section, parameter)
     return result or default_value
 

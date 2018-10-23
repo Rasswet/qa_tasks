@@ -1,26 +1,25 @@
 """ Test task
     Simple tests for api
+
+    How to run 1 test?
+    Example (from test dir): python -m pytest test_scenarios.py -k test_negative_update_book
+
 """
 # pylint:disable=redefined-outer-name
 
 import pytest
 
-# from .utils import add_book
-# from .utils import get_all_books
-# from .utils import get_book
-# from .utils import update_book
-# from .utils import delete_book
-# from .utils import validate_uuid4
 
-from utils import add_book
-from utils import get_all_books
-from utils import get_book
-from utils import update_book
-from utils import delete_book
-from utils import validate_uuid4
-from utils import host
-from utils import auth
-from utils import put
+from .utils import add_book
+from .utils import get_all_books
+from .utils import get_book
+from .utils import update_book
+from .utils import delete_book
+from .utils import validate_uuid4
+from .utils import host
+from .utils import auth
+from .utils import put
+
 
 @pytest.mark.parametrize('title', ['', 'test', u'тест'])
 @pytest.mark.parametrize('author', ['', 'Teodor Drayzer', u'Пушкин'])
@@ -60,38 +59,32 @@ def test_get_list_of_books():
 
 
 @pytest.mark.parametrize('title', [u'тест'])
-@pytest.mark.parametrize('author', [ u'Пушкин'])
+@pytest.mark.parametrize('author', [u'Пушкин', 'Chase'])
 def test_delete_book(title, author):
-    # Create new book:
-    new_book = add_book({'title': '', 'author': ''})
+    """ Check that 'get books' method returns correct list of books. """
 
-    # book_id=u'УтроСтарыйХооббитВасилий'
-
-
+    new_book = add_book({'title': title, 'author': author})
     book_id = new_book['id']
 
-    # Get list of all books:
     all_books_before = get_all_books()
 
-    # Update book attributes:
     delete_book(book_id)
 
     all_books_after = get_all_books()
 
-    # Get info about this book:
     book = get_book(book_id)
 
-    assert len(book)==0
+    assert book == dict()
     assert len(all_books_before)-1 == len(all_books_after)
 
-@pytest.mark.parametrize('book_id', [u'SomeRareBook'])
-# @pytest.mark.parametrize('book_id', [u'УтроСтарыйХооббитВасилий'])
+
+@pytest.mark.parametrize('book_id', [u'SomeRareBook_id_'])
 def test_delete_book_negative(book_id):
+    """ Check that we can not delete book in negative case. """
+
     # Get list of all books:
     all_books_before = get_all_books()
 
-    # book_id = 'VasiliyOldHobbyt'
-    # Update book attributes:
     delete_book(book_id)
 
     all_books_after = get_all_books()
@@ -100,16 +93,15 @@ def test_delete_book_negative(book_id):
 
 
 @pytest.mark.parametrize('title', ['"', 'test', u'тест'])
-@pytest.mark.parametrize('author', ['', 'Teodor Drayzer', u'Пушкин'])
+@pytest.mark.parametrize('author', ['', 'Teodor Drayzer', u'Блок'])
 def test_update_book(title, author):
-    # Create new book:
+    """ Check that we can update book info. """
+
     new_book = add_book({'title': '', 'author': ''})
     book_id = new_book['id']
 
-    # Update book attributes:
     update_book(book_id, {'title': title, 'author': author})
 
-    # Get info about this book:
     book = get_book(book_id)
 
     # Verify that changes were applied correctly:
@@ -117,22 +109,20 @@ def test_update_book(title, author):
     assert book['author'] == author
 
 
-@pytest.mark.parametrize('book_id', [u'090909090999000999'])
-@pytest.mark.parametrize('title', [ u'тест_нога'])
-@pytest.mark.parametrize('author', [ u'тест__нога'])
-def test_negative_update_book(book_id,title, author):
+@pytest.mark.parametrize('book_id', [u'0909090909990009997'*50])
+@pytest.mark.parametrize('title', [u'тест_негатив_заголовок_'])
+@pytest.mark.parametrize('author', [u'тест__негатив author_'])
+def test_negative_update_book(book_id, title, author):
+    """ Check that we can not update book info. """
 
-    # Try to update book attributes:
-
+    # Try to update book attributes. Negative case:
     url = '{0}/books/{1}'.format(host, book_id)
     body = {'title': title, 'author': author}
     response = put(url, cookies=auth(), body=body)
 
     # Verify that changed nothing:
-    assert response.status_code== 404
-
-
+    assert response.status_code == 404
 
 if __name__ == "__main__":
-    # useful for PyCharm
+    # в PyCharm удобно запускать как обычный скрипт. Без командной строки
     pytest.main()
